@@ -173,8 +173,9 @@ public class PrimaryController {
 	{
 		statusLabel.setText(message);
 		grid.setDisable(true);
+		if (newGameBtn != null) newGameBtn.setDisable(false);
+		if (LeaveBtn != null) LeaveBtn.setDisable(true);
 	}
-
 	public void handleGameStart(char startingTurn, String message) {
 
 		// Set the current turn to the starting player as indicated by the server
@@ -188,7 +189,7 @@ public class PrimaryController {
 			}
 		}
 		grid.setDisable(false); // enable the grid for the new game
-		if (newGameBtn != null) newGameBtn.setDisable(false);
+		if (newGameBtn != null) newGameBtn.setDisable(true);
 		if (LeaveBtn != null) LeaveBtn.setDisable(false);
 	}
 
