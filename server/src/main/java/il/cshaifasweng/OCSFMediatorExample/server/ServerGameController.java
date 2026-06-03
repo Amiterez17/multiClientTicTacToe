@@ -57,7 +57,7 @@ public class ServerGameController {
         }
     }
 
-    private void sendToAll(GameMessage msg)
+    private synchronized void sendToAll(GameMessage msg)
     {
         try {
             if (playerX != null) {
@@ -72,7 +72,7 @@ public class ServerGameController {
         }
     }
 
-    private void sendToIndividual(ConnectionToClient client, GameMessage msg) {
+    private synchronized void sendToIndividual(ConnectionToClient client, GameMessage msg) {
         try {
             if (client != null) {
                 client.sendToClient(msg);

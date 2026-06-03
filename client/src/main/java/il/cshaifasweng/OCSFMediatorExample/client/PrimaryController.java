@@ -90,6 +90,8 @@ public class PrimaryController {
 	@FXML
 	void onCellClicked(ActionEvent event)
 	{
+		//	If the player hasn't received their assigned sign from the server yet, ignore clicks on the grid
+		if (mySign == '\0') return;
 		// get the button that was clicked
 		Button clickedButton = (Button) event.getSource();
 		Integer rowIndex = GridPane.getRowIndex(clickedButton);
@@ -149,51 +151,45 @@ public class PrimaryController {
 	}
 	// This method will be called when the client receives a CONNECT response from the server
 	public void handleConnectResponse(char assignedSign, String message) {
-		Platform.runLater(() -> {
-			this.mySign = assignedSign;
-			statusLabel.setText(message);
-		});
+
+		this.mySign = assignedSign;
+		statusLabel.setText(message);
 	}
 
 	public void updateSingleCell(int row, int col, char sign, String status) {
-		Platform.runLater(() -> {
-			Button[][] buttonMap = {{btn00, btn01, btn02}, {btn10, btn11, btn12}, {btn20, btn21, btn22}};
-			// Update the text of the button at the specified row and column
-			buttonMap[row][col].setText(String.valueOf(sign));
 
-			// Update the current turn to the other player
-			this.currentTurn = (sign == 'X') ? 'O' : 'X';
-			if (status == null || !status.equals("END")) {
-				statusLabel.setText("Turn of player: " + this.currentTurn);
-			}
-		});
+		Button[][] buttonMap = {{btn00, btn01, btn02}, {btn10, btn11, btn12}, {btn20, btn21, btn22}};
+		// Update the text of the button at the specified row and column
+		buttonMap[row][col].setText(String.valueOf(sign));
+
+		// Update the current turn to the other player
+		this.currentTurn = (sign == 'X') ? 'O' : 'X';
+		if (status == null || !status.equals("END")) {
+			statusLabel.setText("Turn of player: " + this.currentTurn);
+		}
 	}
 
 	public void handleGameOver(String message, char winnerSign)
 	{
-		Platform.runLater(() -> {
-			statusLabel.setText(message);
-			grid.setDisable(true);
-		});
+		statusLabel.setText(message);
+		grid.setDisable(true);
 	}
 
 	public void handleGameStart(char startingTurn, String message) {
-		Platform.runLater(() ->
-		{
-			// Set the current turn to the starting player as indicated by the server
-			this.currentTurn = startingTurn;
-			// Update the status label to indicate the game has started and whose turn it is
-			statusLabel.setText(message);
-			Button[] boardButtons = {btn00, btn01, btn02, btn10, btn11, btn12, btn20, btn21, btn22};
-			for (Button btn : boardButtons) {
-				if (btn != null) {
-					btn.setText(""); // clear the text of each button to reset the board for the new game
-				}
+
+		// Set the current turn to the starting player as indicated by the server
+		this.currentTurn = startingTurn;
+		// Update the status label to indicate the game has started and whose turn it is
+		statusLabel.setText(message);
+		Button[] boardButtons = {btn00, btn01, btn02, btn10, btn11, btn12, btn20, btn21, btn22};
+		for (Button btn : boardButtons) {
+			if (btn != null) {
+				btn.setText(""); // clear the text of each button to reset the board for the new game
 			}
-			grid.setDisable(false); // enable the grid for the new game
-			if (newGameBtn != null) newGameBtn.setDisable(false);
-			if (LeaveBtn != null) LeaveBtn.setDisable(false);
-		});
+		}
+		grid.setDisable(false); // enable the grid for the new game
+		if (newGameBtn != null) newGameBtn.setDisable(false);
+		if (LeaveBtn != null) LeaveBtn.setDisable(false);
 	}
 
 	// This method will be called when the client receives an ERROR message from the server

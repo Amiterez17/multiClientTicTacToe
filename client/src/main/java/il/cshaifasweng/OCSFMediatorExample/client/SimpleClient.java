@@ -10,7 +10,7 @@ import il.cshaifasweng.OCSFMediatorExample.entities.Warning;
 public class SimpleClient extends AbstractClient {
 	
 	private static SimpleClient client = null;
-	private static PrimaryController controller;
+	private static volatile PrimaryController controller;
 	private SimpleClient(String host, int port) {
 		super(host, port);
 	}
@@ -34,21 +34,27 @@ public class SimpleClient extends AbstractClient {
 				{
 					// unpacking only the player's sign and the text message
 					case CONNECT:
-						Platform.runLater(() ->
-								controller.handleConnectResponse(gameMsg.getPlayerSign(), gameMsg.getTextMessage())
-						);
+						Platform.runLater(() -> {
+							if (controller != null) {
+								controller.handleConnectResponse(gameMsg.getPlayerSign(), gameMsg.getTextMessage());
+							}
+						});
 						break;
 
 					case GAME_START:
-						Platform.runLater(() ->
-								controller.handleGameStart(gameMsg.getPlayerSign(), gameMsg.getTextMessage())
-						);
+						Platform.runLater(() -> {
+							if (controller != null) {
+								controller.handleGameStart(gameMsg.getPlayerSign(), gameMsg.getTextMessage());
+							}
+						});
 						break;
 
 					case GAME_OVER:
-						Platform.runLater(() ->
-								controller.handleGameOver(gameMsg.getTextMessage(), gameMsg.getPlayerSign())
-						);
+						Platform.runLater(() -> {
+							if (controller != null) {
+								controller.handleGameOver(gameMsg.getTextMessage(), gameMsg.getPlayerSign());
+							}
+						});
 						break;
 
                     // unpacking the row, column and player's sign
@@ -59,7 +65,11 @@ public class SimpleClient extends AbstractClient {
 						int col = gameMsg.getCol();
 						char sign = gameMsg.getPlayerSign();
 						String status = gameMsg.getTextMessage();
-						Platform.runLater(() -> controller.updateSingleCell(row, col, sign, status));
+						Platform.runLater(() -> {
+							if (controller != null) {
+								controller.updateSingleCell(row, col, sign, status);
+							}
+						});
 						break;
 
 					case ERROR:
